@@ -1,0 +1,42 @@
+{
+  "bench_id": "bench_beta",
+  "name": "Partial AEB Bench (Core ECUs Only)",
+  "location": "HIL Lab — Building 4, Bay 8",
+  "platform": "dSPACE SCALEXIO",
+  "physical_ecus": [
+    "ADAS_Controller",
+    "Brake_ECU"
+  ],
+  "simulated_ecus": [
+    "Forward_Radar",
+    "Front_Camera",
+    "Instrument_Cluster",
+    "Seat_Control_Module"
+  ],
+  "buses": {
+    "CAN_HS_1": {"type": "CAN", "baudrate": 500000, "channel": 1},
+    "CAN_HS_2": {"type": "CAN", "baudrate": 500000, "channel": 2, "note": "rest-bus simulation"},
+    "CAN_BODY": {"type": "CAN", "baudrate": 250000, "channel": 3, "note": "rest-bus simulation"},
+    "LIN_BODY": {"type": "LIN", "baudrate": 19200, "channel": 1, "note": "stub responses only"}
+  },
+  "plant_model": {
+    "name": "AEB_VehicleDynamics_PartialBench_v3",
+    "solver_step_ms": 1,
+    "includes": [
+      "vehicle_dynamics",
+      "road_surface",
+      "target_vehicles",
+      "radar_object_list_generator",
+      "camera_perception_stub",
+      "cluster_io_stub",
+      "seat_haptic_stub"
+    ]
+  },
+  "capabilities": [
+    "full_aeb_activation",
+    "simulated_sensor_latency",
+    "simulated_cluster_display",
+    "simulated_haptic_feedback",
+    "brake_pressure_measurement"
+  ]
+}

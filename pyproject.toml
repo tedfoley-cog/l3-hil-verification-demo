@@ -1,0 +1,50 @@
+[project]
+name = "l3-hil-verification-demo"
+version = "0.1.0"
+description = "L3 requirements-driven system-level HIL V&V demo"
+requires-python = ">=3.11"
+dependencies = [
+    "pyyaml>=6.0",
+    "openpyxl>=3.1",
+    "jinja2>=3.1",
+    "fastapi>=0.115",
+    "uvicorn>=0.34",
+    "gherkin-official>=29.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "types-PyYAML>=6.0",
+    "types-openpyxl>=3.1",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "gherkin.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "openpyxl.*"
+ignore_missing_imports = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["harness", "dashboard"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

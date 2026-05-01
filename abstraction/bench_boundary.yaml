@@ -1,0 +1,72 @@
+# Bench Boundary Configuration — defines which ECUs are physical (real hardware)
+# vs simulated (modeled in the HIL plant) on each bench configuration.
+#
+# This is critical for L3 system-level testing: a test bench may only include
+# some of the ECUs involved in a feature. Signals to/from simulated ECUs are
+# routed through the plant model; signals to/from physical ECUs go over real
+# CAN/LIN/FlexRay buses.
+#
+# The mapper uses this to determine:
+#   - Whether a signal write goes to real hardware or a simulation variable
+#   - Whether timing measurements are subject to bus latency or are instantaneous
+#   - Whether fault injection is possible for a given ECU on a given bench
+
+benches:
+  bench_alpha:
+    description: "Full-system bench — all FCM ECUs present as physical hardware"
+    ecus:
+      ADAS_Controller:
+        type: physical
+        bus: CAN_HS_1
+        note: "Continental MFC5xx ADAS domain controller"
+      Brake_ECU:
+        type: physical
+        bus: CAN_HS_1
+        note: "Continental MK C2 ESC/AEB hydraulic controller"
+      Forward_Radar:
+        type: physical
+        bus: CAN_HS_2
+        note: "Continental ARS540 long-range radar"
+      Front_Camera:
+        type: physical
+        bus: CAN_HS_2
+        note: "Integrated in ADAS_Controller (mono camera)"
+      Instrument_Cluster:
+        type: physical
+        bus: CAN_BODY
+        note: "Visteon SmartCore cluster"
+      Seat_Control_Module:
+        type: physical
+        bus: LIN_BODY
+        note: "Seat haptic feedback module"
+    plant_model: "Vehicle dynamics + environment (target vehicles, road surface)"
+    timing_note: "All inter-ECU latencies are real bus latencies"
+
+  bench_beta:
+    description: "Partial bench — brake + ADAS physical, sensor + body simulated"
+    ecus:
+      ADAS_Controller:
+        type: physical
+        bus: CAN_HS_1
+      Brake_ECU:
+        type: physical
+        bus: CAN_HS_1
+      Forward_Radar:
+        type: simulated
+        bus: CAN_HS_2
+        model: "Radar object list generator (plant model)"
+        note: "Radar signals injected by HIL simulator — no real sensor"
+      Front_Camera:
+        type: simulated
+        bus: CAN_HS_2
+        model: "Camera perception stub (ground-truth feed)"
+      Instrument_Cluster:
+        type: simulated
+        bus: CAN_BODY
+        model: "Cluster I/O stub — reads FCW lamp request, writes ack"
+      Seat_Control_Module:
+        type: simulated
+        bus: LIN_BODY
+        model: "Haptic feedback stub"
+    plant_model: "Vehicle dynamics + environment + sensor models + body stubs"
+    timing_note: "Sensor and body signals have zero bus latency (plant-injected)"

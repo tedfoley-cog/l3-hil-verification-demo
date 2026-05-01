@@ -1,0 +1,124 @@
+# Action Library — maps abstract Gherkin-level actions to concrete signal operations.
+#
+# Each abstract action used in Gherkin scenarios (e.g. "set ignition on") is
+# defined here with its concrete signal-level implementation. The mapper reads
+# this library to translate abstract test steps into bench-executable operations.
+#
+# Structure:
+#   <action_key>:
+#     description: human-readable explanation
+#     signals: list of signal operations to perform
+#       - signal: signal dictionary key
+#         value: value to write (or "parameter" for dynamic values)
+#         delay_ms: optional wait after write
+#     preconditions: optional list of signal states that must be true first
+#     postconditions: optional list of signal states to verify after execution
+
+set_ignition_on:
+  description: "Turn ignition to RUN state"
+  signals:
+    - signal: ignition_status
+      value: 2  # 0=OFF, 1=ACC, 2=RUN, 3=START
+      delay_ms: 500
+  postconditions:
+    - signal: ignition_status
+      expected: 2
+
+set_ignition_off:
+  description: "Turn ignition to OFF state"
+  signals:
+    - signal: ignition_status
+      value: 0
+      delay_ms: 200
+
+set_vehicle_speed:
+  description: "Set host vehicle longitudinal speed"
+  signals:
+    - signal: vehicle_speed_kph
+      value: parameter  # caller provides speed value
+    - signal: wheel_speed_fl_kph
+      value: parameter
+    - signal: wheel_speed_fr_kph
+      value: parameter
+    - signal: wheel_speed_rl_kph
+      value: parameter
+    - signal: wheel_speed_rr_kph
+      value: parameter
+  preconditions:
+    - signal: ignition_status
+      expected: 2
+
+apply_brake_pedal:
+  description: "Apply driver brake pedal with specified force"
+  signals:
+    - signal: brake_pedal_force_n
+      value: parameter
+    - signal: brake_pedal_applied
+      value: 1
+      delay_ms: 50
+
+release_brake_pedal:
+  description: "Release driver brake pedal"
+  signals:
+    - signal: brake_pedal_force_n
+      value: 0
+    - signal: brake_pedal_applied
+      value: 0
+
+inject_radar_target:
+  description: "Simulate a radar-detected target at specified range and relative speed"
+  signals:
+    - signal: radar_target_range_m
+      value: parameter
+    - signal: radar_target_relative_speed_mps
+      value: parameter
+    - signal: radar_target_valid
+      value: 1
+      delay_ms: 100
+
+clear_radar_target:
+  description: "Remove simulated radar target"
+  signals:
+    - signal: radar_target_valid
+      value: 0
+    - signal: radar_target_range_m
+      value: 0
+    - signal: radar_target_relative_speed_mps
+      value: 0
+
+trigger_fcw:
+  description: "Simulate ADAS controller issuing a forward collision warning"
+  signals:
+    - signal: fcw_active
+      value: 1
+    - signal: threat_detected
+      value: 1
+      delay_ms: 10
+
+trigger_aeb:
+  description: "Simulate ADAS controller issuing AEB brake command"
+  signals:
+    - signal: aeb_brake_request
+      value: 1
+    - signal: aeb_decel_request_mps2
+      value: parameter
+      delay_ms: 50
+
+check_vehicle_stopped:
+  description: "Verify vehicle has come to a complete stop"
+  signals:
+    - signal: vehicle_speed_kph
+      expected: 0
+      tolerance: 0.5
+
+check_fcw_display:
+  description: "Verify FCW warning is displayed on instrument cluster"
+  signals:
+    - signal: cluster_fcw_lamp
+      expected: 1
+
+check_haptic_alert:
+  description: "Verify haptic seat alert is active"
+  signals:
+    - signal: seat_haptic_active
+      expected: 1

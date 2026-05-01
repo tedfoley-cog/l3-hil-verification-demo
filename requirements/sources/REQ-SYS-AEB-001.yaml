@@ -1,0 +1,53 @@
+# System Requirement: AEB Activation Timing
+# Source: Jama Connect export (sanitized)
+# This requirement is ATOMIC — it specifies a single testable condition.
+
+id: REQ-SYS-AEB-001
+title: "AEB activation timing for stationary target"
+revision: 4
+status: approved
+asil: C
+domain: ADAS
+subsystem: Forward Collision Mitigation
+
+description: >
+  When the host vehicle approaches a stationary target at speeds between
+  30 kph and 80 kph on a dry surface (mu >= 0.85), the Automatic Emergency
+  Braking system shall initiate autonomous braking no later than 1.2 seconds
+  after the forward collision warning is issued, provided the driver has not
+  applied the brake pedal.
+
+acceptance_criteria:
+  - id: AC-001-1
+    text: >
+      AEB brake command is issued within 1200 ms of FCW activation
+      when approaching a stationary target at 40 kph.
+    metric: aeb_response_time_ms
+    threshold: 1200
+    type: analog
+
+  - id: AC-001-2
+    text: >
+      AEB brake command is issued within 1200 ms of FCW activation
+      when approaching a stationary target at 60 kph.
+    metric: aeb_response_time_ms
+    threshold: 1200
+    type: analog
+
+  - id: AC-001-3
+    text: >
+      AEB shall not activate when driver brake pedal force exceeds 50 N
+      before FCW timeout.
+    metric: aeb_inhibited_by_driver
+    threshold: 1
+    type: boolean
+
+trace:
+  parent: REQ-VEH-FCM-010
+  standard: "ISO 22839:2013 §6.2"
+  euro_ncap: "AEB City / AEB Inter-Urban test protocol v4.1"
+  ecus_involved:
+    - ADAS_Controller
+    - Brake_ECU
+    - Forward_Radar
+    - Front_Camera
