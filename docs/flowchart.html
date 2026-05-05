@@ -52,6 +52,14 @@
 
     .mermaid svg { margin: 0 auto; display: block; }
 
+    /* Fix Mermaid node text clipping */
+    .mermaid .node foreignObject {
+      overflow: visible !important;
+    }
+    .mermaid .node foreignObject > div {
+      overflow: visible !important;
+    }
+
     .legend {
       width: 100%;
       max-width: 1400px;
@@ -126,7 +134,7 @@
     'secondaryColor':    '#f0fdf4',
     'tertiaryColor':     '#fef3c7',
     'lineColor':         '#64748b',
-    'fontSize':          '14px',
+    'fontSize':          '13px',
     'fontFamily':        'Segoe UI, system-ui, sans-serif',
     'nodeTextColor':     '#1e293b'
   }
@@ -173,7 +181,7 @@ flowchart TD
 
   %% ── Decision ──
   APPROVED{"<b>Approved?</b>"}
-  READY["<b>Ready for Bench Execution</b><br/>ISO 26262 traceability maintained"]
+  READY["<b>Bench Ready</b><br/>ISO 26262 traceable"]
   ITERATE["<b>Iterate</b><br/>Refine scenarios or tests"]
 
   %% ── Connections ──
@@ -239,15 +247,115 @@ flowchart TD
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
     mermaid.initialize({
-      startOnLoad: true,
+      startOnLoad: false,
       securityLevel: 'loose',
       flowchart: {
         htmlLabels: true,
         curve: 'basis',
         rankSpacing: 60,
-        nodeSpacing: 40,
-        padding: 16,
-        useMaxWidth: false
+        nodeSpacing: 60,
+        padding: 20,
+        useMaxWidth: false,
+        wrappingWidth: 400
+      }
+    });
+
+    await mermaid.run();
+
+    // Post-render: resize nodes so all text is visible
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.node').forEach(node => {
+        const fo = node.querySelector('foreignObject');
+        if (!fo) return;
+        const div = fo.querySelector('div');
+        if (!div) return;
+
+        // Measure actual content size
+        const textW = div.scrollWidth;
+        const textH = div.scrollHeight;
+        const padX = 40;
+        const padY = 20;
+        const needW = textW + padX;
+        const needH = textH + padY;
+
+        const foW = parseFloat(fo.getAttribute('width'));
+        const foH = parseFloat(fo.getAttribute('height'));
+
+        if (needW > foW || needH > foH) {
+          const newW = Math.max(needW, foW);
+          const newH = Math.max(needH, foH);
+          const dw = newW - foW;
+          const dh = newH - foH;
+
+          fo.setAttribute('width', newW);
+          fo.setAttribute('height', newH);
+          // Re-center the foreignObject
+          const foX = parseFloat(fo.getAttribute('x'));
+          fo.setAttribute('x', foX - dw / 2);
+
+          // Resize background rect
+          const rect = node.querySelector('rect');
+          if (rect) {
+            const rw = parseFloat(rect.getAttribute('width'));
+            const rh = parseFloat(rect.getAttribute('height'));
+            rect.setAttribute('width', rw + dw);
+            rect.setAttribute('height', rh + dh);
+            const rx = parseFloat(rect.getAttribute('x'));
+            rect.setAttribute('x', rx - dw / 2);
+          }
+
+          // Resize background polygon (diamond nodes)
+          const poly = node.querySelector('polygon');
+          if (poly) {
+            const bbox = poly.getBBox();
+            const scaleX = (bbox.width + dw) / bbox.width;
+            const scaleY = (bbox.height + dh) / bbox.height;
+            const cx = bbox.x + bbox.width / 2;
+            const cy = bbox.y + bbox.height / 2;
+            const points = poly.getAttribute('points').split(' ').map(p => {
+              const [px, py] = p.split(',').map(Number);
+              return `${cx + (px - cx) * scaleX},${cy + (py - cy) * scaleY}`;
+            });
+            poly.setAttribute('points', points.join(' '));
+          }
+        }
+      });
+
+      // Fix edge labels that may be clipped
+      document.querySelectorAll('.edgeLabel foreignObject').forEach(fo => {
+        const div = fo.querySelector('div');
+        if (!div) return;
+        const textW = div.scrollWidth + 16;
+        const textH = div.scrollHeight + 8;
+        const foW = parseFloat(fo.getAttribute('width'));
+        const foH = parseFloat(fo.getAttribute('height'));
+        if (textW > foW) {
+          fo.setAttribute('width', textW);
+          const foX = parseFloat(fo.getAttribute('x'));
+          fo.setAttribute('x', foX - (textW - foW) / 2);
+        }
+        if (textH > foH) {
+          fo.setAttribute('height', textH);
+        }
+        // Also fix the background rect of edge labels
+        const rect = fo.closest('.edgeLabel')?.querySelector('rect');
+        if (rect) {
+          const rw = parseFloat(rect.getAttribute('width'));
+          if (textW > rw) {
+            const rx = parseFloat(rect.getAttribute('x'));
+            rect.setAttribute('width', textW);
+            rect.setAttribute('x', rx - (textW - rw) / 2);
+          }
+        }
+      });
+
+      // Update SVG viewBox to fit all resized content
+      const svg = document.querySelector('.mermaid svg');
+      if (svg) {
+        const bbox = svg.getBBox();
+        const margin = 40;
+        svg.setAttribute('viewBox',
+          `${bbox.x - margin} ${bbox.y - margin} ${bbox.width + margin * 2} ${bbox.height + margin * 2}`);
       }
     });
   </script>
