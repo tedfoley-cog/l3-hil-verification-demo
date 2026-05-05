@@ -1,0 +1,33 @@
+{
+  "bench_id": "bench_alpha",
+  "name": "Full-System AEB Bench",
+  "location": "HIL Lab — Building 4, Bay 12",
+  "platform": "dSPACE SCALEXIO",
+  "physical_ecus": [
+    "ADAS_Controller",
+    "Brake_ECU",
+    "Forward_Radar",
+    "Front_Camera",
+    "Instrument_Cluster",
+    "Seat_Control_Module"
+  ],
+  "simulated_ecus": [],
+  "buses": {
+    "CAN_HS_1": {"type": "CAN", "baudrate": 500000, "channel": 1},
+    "CAN_HS_2": {"type": "CAN", "baudrate": 500000, "channel": 2},
+    "CAN_BODY": {"type": "CAN", "baudrate": 250000, "channel": 3},
+    "LIN_BODY": {"type": "LIN", "baudrate": 19200, "channel": 1}
+  },
+  "plant_model": {
+    "name": "AEB_VehicleDynamics_v3",
+    "solver_step_ms": 1,
+    "includes": ["vehicle_dynamics", "road_surface", "target_vehicles"]
+  },
+  "capabilities": [
+    "full_aeb_activation",
+    "real_sensor_latency",
+    "real_cluster_display",
+    "haptic_feedback",
+    "brake_pressure_measurement"
+  ]
+}

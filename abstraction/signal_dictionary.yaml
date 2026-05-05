@@ -1,0 +1,226 @@
+# Signal Dictionary — maps abstract signal names to concrete CAN/LIN identifiers.
+#
+# Each signal used in the action library and test artifacts is defined here with
+# its physical-layer addressing, scaling, unit, and valid range. The mapper uses
+# this to generate bench-specific signal access code.
+#
+# Structure mirrors a simplified DBC/ARXML signal definition:
+#   <abstract_name>:
+#     can_id: CAN message arbitration ID (hex)
+#     bus: bus name from bench_boundary.yaml
+#     start_bit: signal start bit in the CAN frame
+#     length: signal bit length
+#     factor: raw-to-physical scaling factor
+#     offset: raw-to-physical offset
+#     unit: physical unit
+#     min/max: valid physical range
+#     ecu: source ECU
+
+vehicle_speed_kph:
+  can_id: 0x1A0
+  bus: CAN_HS_1
+  start_bit: 0
+  length: 16
+  factor: 0.01
+  offset: 0
+  unit: "kph"
+  min: 0
+  max: 300
+  ecu: Brake_ECU
+
+wheel_speed_fl_kph:
+  can_id: 0x1A2
+  bus: CAN_HS_1
+  start_bit: 0
+  length: 16
+  factor: 0.01
+  offset: 0
+  unit: "kph"
+  min: 0
+  max: 300
+  ecu: Brake_ECU
+
+wheel_speed_fr_kph:
+  can_id: 0x1A2
+  bus: CAN_HS_1
+  start_bit: 16
+  length: 16
+  factor: 0.01
+  offset: 0
+  unit: "kph"
+  min: 0
+  max: 300
+  ecu: Brake_ECU
+
+wheel_speed_rl_kph:
+  can_id: 0x1A2
+  bus: CAN_HS_1
+  start_bit: 32
+  length: 16
+  factor: 0.01
+  offset: 0
+  unit: "kph"
+  min: 0
+  max: 300
+  ecu: Brake_ECU
+
+wheel_speed_rr_kph:
+  can_id: 0x1A2
+  bus: CAN_HS_1
+  start_bit: 48
+  length: 16
+  factor: 0.01
+  offset: 0
+  unit: "kph"
+  min: 0
+  max: 300
+  ecu: Brake_ECU
+
+ignition_status:
+  can_id: 0x130
+  bus: CAN_BODY
+  start_bit: 0
+  length: 4
+  factor: 1
+  offset: 0
+  unit: "enum"
+  min: 0
+  max: 3
+  ecu: Body_Controller
+  enum_values:
+    0: "OFF"
+    1: "ACC"
+    2: "RUN"
+    3: "START"
+
+brake_pedal_force_n:
+  can_id: 0x1B0
+  bus: CAN_HS_1
+  start_bit: 0
+  length: 16
+  factor: 0.1
+  offset: 0
+  unit: "N"
+  min: 0
+  max: 2000
+  ecu: Brake_ECU
+
+brake_pedal_applied:
+  can_id: 0x1B0
+  bus: CAN_HS_1
+  start_bit: 16
+  length: 1
+  factor: 1
+  offset: 0
+  unit: "bool"
+  min: 0
+  max: 1
+  ecu: Brake_ECU
+
+radar_target_range_m:
+  can_id: 0x380
+  bus: CAN_HS_2
+  start_bit: 0
+  length: 16
+  factor: 0.1
+  offset: 0
+  unit: "m"
+  min: 0
+  max: 250
+  ecu: Forward_Radar
+
+radar_target_relative_speed_mps:
+  can_id: 0x380
+  bus: CAN_HS_2
+  start_bit: 16
+  length: 16
+  factor: 0.01
+  offset: -100
+  unit: "m/s"
+  min: -100
+  max: 100
+  ecu: Forward_Radar
+
+radar_target_valid:
+  can_id: 0x380
+  bus: CAN_HS_2
+  start_bit: 32
+  length: 1
+  factor: 1
+  offset: 0
+  unit: "bool"
+  min: 0
+  max: 1
+  ecu: Forward_Radar
+
+fcw_active:
+  can_id: 0x3A0
+  bus: CAN_HS_1
+  start_bit: 0
+  length: 1
+  factor: 1
+  offset: 0
+  unit: "bool"
+  min: 0
+  max: 1
+  ecu: ADAS_Controller
+
+threat_detected:
+  can_id: 0x3A0
+  bus: CAN_HS_1
+  start_bit: 1
+  length: 1
+  factor: 1
+  offset: 0
+  unit: "bool"
+  min: 0
+  max: 1
+  ecu: ADAS_Controller
+
+aeb_brake_request:
+  can_id: 0x3A2
+  bus: CAN_HS_1
+  start_bit: 0
+  length: 1
+  factor: 1
+  offset: 0
+  unit: "bool"
+  min: 0
+  max: 1
+  ecu: ADAS_Controller
+
+aeb_decel_request_mps2:
+  can_id: 0x3A2
+  bus: CAN_HS_1
+  start_bit: 8
+  length: 16
+  factor: 0.01
+  offset: 0
+  unit: "m/s^2"
+  min: 0
+  max: 15
+  ecu: ADAS_Controller
+
+cluster_fcw_lamp:
+  can_id: 0x420
+  bus: CAN_BODY
+  start_bit: 4
+  length: 1
+  factor: 1
+  offset: 0
+  unit: "bool"
+  min: 0
+  max: 1
+  ecu: Instrument_Cluster
+
+seat_haptic_active:
+  can_id: 0x520
+  bus: LIN_BODY
+  start_bit: 0
+  length: 1
+  factor: 1
+  offset: 0
+  unit: "bool"
+  min: 0
+  max: 1
+  ecu: Seat_Control_Module

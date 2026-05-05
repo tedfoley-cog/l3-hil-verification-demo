@@ -1,0 +1,43 @@
+# System Requirement: AEB Deceleration Profile and Warning Coordination
+# Source: Jama Connect export (sanitized)
+# This requirement is COMPOUND — it bundles multiple independently testable
+# conditions into a single statement. A key demo talking point: Devin will
+# decompose this into atomic Gherkin scenarios.
+
+id: REQ-SYS-AEB-002
+title: "AEB deceleration profile and warning coordination"
+revision: 2
+status: approved
+asil: C
+domain: ADAS
+subsystem: Forward Collision Mitigation
+
+description: >
+  The AEB system shall apply a minimum deceleration of 6 m/s^2 within
+  500 ms of brake command initiation when the host vehicle is travelling
+  between 30 kph and 80 kph toward a stationary or slower-moving target,
+  and the forward collision warning shall illuminate the instrument cluster
+  warning lamp within 200 ms of threat detection, and the haptic seat alert
+  shall activate simultaneously with the visual warning, and the AEB
+  deceleration shall ramp to full braking (>= 9.5 m/s^2) within 1.0 second
+  of initial brake application if the collision is not averted.
+
+acceptance_criteria:
+  - id: AC-002-1
+    text: >
+      All conditions in the compound requirement are met during a
+      40 kph approach to a stationary target.
+    metric: compound_pass
+    threshold: 1
+    type: boolean
+
+trace:
+  parent: REQ-VEH-FCM-012
+  standard: "ISO 22839:2013 §6.3, §7.1"
+  euro_ncap: "AEB City test protocol v4.1 — deceleration criteria"
+  ecus_involved:
+    - ADAS_Controller
+    - Brake_ECU
+    - Forward_Radar
+    - Instrument_Cluster
+    - Seat_Control_Module

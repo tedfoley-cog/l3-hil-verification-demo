@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L3 HIL V&amp;V Pipeline</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f0f2f5;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      color: #fff;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+    header p { color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+
+    /* Stats bar */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.2rem;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+      border: 1px solid #e2e8f0;
+    }
+    .stat-card .value { font-size: 2rem; font-weight: 700; color: #0f172a; }
+    .stat-card .label { font-size: 0.8rem; color: #64748b; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Pipeline stages */
+    .pipeline { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem; }
+    .stage {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 10px;
+      padding: 0.8rem 1.2rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+      transition: all 0.3s;
+    }
+    .stage .indicator {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+    .stage .indicator.pending   { background: #cbd5e1; }
+    .stage .indicator.running   { background: #3b82f6; animation: pulse 1.5s infinite; }
+    .stage .indicator.completed { background: #10b981; }
+    .stage .indicator.failed    { background: #ef4444; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .stage .name { font-weight: 600; font-size: 0.95rem; flex: 1; }
+    .stage .detail { font-size: 0.8rem; color: #64748b; }
+
+    /* Traceability table */
+    .trace-section { margin-top: 2rem; }
+    .trace-section h2 { font-size: 1.2rem; margin-bottom: 1rem; color: #0f172a; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    th {
+      background: #f8fafc;
+      text-align: left;
+      padding: 0.8rem 1rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    td {
+      padding: 0.7rem 1rem;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    tr:last-child td { border-bottom: none; }
+    .result-pass { color: #10b981; font-weight: 600; }
+    .result-fail { color: #ef4444; font-weight: 600; }
+    .result-skip { color: #94a3b8; font-weight: 600; }
+    .result-err  { color: #f59e0b; font-weight: 600; }
+    .tag {
+      display: inline-block;
+      background: #eff6ff;
+      color: #3b82f6;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .tag.decomposed { background: #fef3c7; color: #b45309; }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+      background: #fff;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>L3 HIL V&amp;V Pipeline</h1>
+    <p>Requirements-driven system-level verification &amp; validation</p>
+  </header>
+
+  <div class="container">
+    <div class="stats" id="stats">
+      <div class="stat-card">
+        <div class="value" id="val-analyzed">{{ state.requirements_analyzed }}</div>
+        <div class="label">Requirements Analyzed</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="val-scenarios">{{ state.scenarios_generated }}</div>
+        <div class="label">Scenarios Generated</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="val-tests">{{ state.tests_generated }}</div>
+        <div class="label">Tests Generated</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="val-executed">{{ state.tests_executed }}</div>
+        <div class="label">Tests Executed</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="val-passed">{{ state.tests_passed }}</div>
+        <div class="label">Passed</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="val-failed">{{ state.tests_failed }}</div>
+        <div class="label">Failed</div>
+      </div>
+    </div>
+
+    <h2 style="margin-bottom: 1rem;">Pipeline Stages</h2>
+    <div class="pipeline" id="pipeline">
+      {% for stage in state.stages %}
+      <div class="stage">
+        <div class="indicator {{ stage.status }}"></div>
+        <span class="name">{{ stage.name }}</span>
+        <span class="detail">{{ stage.detail }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="trace-section">
+      <h2>Traceability Matrix</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Requirement</th>
+            <th>Scenario</th>
+            <th>Test ID</th>
+            <th>Result</th>
+            <th>Bench</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="trace-body">
+          {% for rec in state.traceability_records %}
+          <tr>
+            <td>{{ rec.requirement_id }}</td>
+            <td>{{ rec.scenario_name }}</td>
+            <td><code>{{ rec.test_id }}</code></td>
+            <td class="result-{{ rec.result | lower }}">{{ rec.result }}</td>
+            <td>{{ rec.bench_id }}</td>
+            <td>
+              {% if rec.decomposed %}<span class="tag decomposed">Decomposed</span>{% endif %}
+              {% if rec.impact_on_existing %}<span class="tag">Impact</span>{% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" style="text-align:center;color:#94a3b8;">No test results yet — trigger a Devin session to populate</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    L3 HIL Verification Demo &mdash; Requirements-Driven V&amp;V &mdash; ASAM XIL &middot; ISO 26262
+  </footer>
+
+  <script>
+    async function refresh() {
+      try {
+        const resp = await fetch('/api/state');
+        const s = await resp.json();
+        document.getElementById('val-analyzed').textContent = s.requirements_analyzed;
+        document.getElementById('val-scenarios').textContent = s.scenarios_generated;
+        document.getElementById('val-tests').textContent = s.tests_generated;
+        document.getElementById('val-executed').textContent = s.tests_executed;
+        document.getElementById('val-passed').textContent = s.tests_passed;
+        document.getElementById('val-failed').textContent = s.tests_failed;
+
+        const pipeline = document.getElementById('pipeline');
+        pipeline.innerHTML = '';
+        for (const stage of s.stages || []) {
+          const div = document.createElement('div');
+          div.className = 'stage';
+          div.innerHTML = `<div class="indicator ${stage.status}"></div><span class="name">${stage.name}</span><span class="detail">${stage.detail || ''}</span>`;
+          pipeline.appendChild(div);
+        }
+
+        const tbody = document.getElementById('trace-body');
+        tbody.innerHTML = '';
+        if (s.traceability_records && s.traceability_records.length > 0) {
+          for (const rec of s.traceability_records) {
+            const cls = rec.result === 'PASS' ? 'pass' : rec.result === 'FAIL' ? 'fail' : rec.result === 'ERROR' ? 'err' : 'skip';
+            const tags = [];
+            if (rec.decomposed) tags.push('<span class="tag decomposed">Decomposed</span>');
+            if (rec.impact_on_existing && rec.impact_on_existing.length) tags.push('<span class="tag">Impact</span>');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${rec.requirement_id}</td><td>${rec.scenario_name || ''}</td><td><code>${rec.test_id}</code></td><td class="result-${cls}">${rec.result}</td><td>${rec.bench_id || ''}</td><td>${tags.join(' ')}</td>`;
+            tbody.appendChild(tr);
+          }
+        } else {
+          const tr = document.createElement('tr');
+          tr.innerHTML = '<td colspan="6" style="text-align:center;color:#94a3b8;">No test results yet — trigger a Devin session to populate</td>';
+          tbody.appendChild(tr);
+        }
+      } catch (e) { /* retry next cycle */ }
+    }
+    setInterval(refresh, 2000);
+  </script>
+</body>
+</html>

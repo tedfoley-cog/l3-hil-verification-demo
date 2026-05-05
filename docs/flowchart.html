@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L3 HIL V&amp;V — Requirements-Driven Verification Workflow</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f5f7fa;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      color: #fff;
+      text-align: center;
+      padding: 2rem 1rem 1.75rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    }
+    header h1 {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    header p {
+      margin-top: .5rem;
+      font-size: .95rem;
+      color: #94a3b8;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 1400px;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    #flowchart {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .mermaid svg { margin: 0 auto; display: block; }
+
+    .legend {
+      width: 100%;
+      max-width: 1400px;
+      padding: 0 1rem 2.5rem;
+    }
+    .legend-inner {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.25rem 1.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .legend-title {
+      font-weight: 600;
+      font-size: .85rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: #64748b;
+      margin-right: .5rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      font-size: .85rem;
+      color: #334155;
+    }
+    .legend-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    footer {
+      width: 100%;
+      text-align: center;
+      padding: 1rem;
+      font-size: .8rem;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+      background: #fff;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 1.25rem .75rem 1rem; }
+      main { padding: 1rem .5rem; }
+      .legend-inner { padding: 1rem; gap: .75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>L3 HIL V&amp;V &mdash; Requirements-Driven Verification</h1>
+    <p>End-to-end pipeline from system requirement to validated, traceable HIL test results</p>
+  </header>
+
+  <main>
+    <div id="flowchart">
+      <pre class="mermaid">
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor':      '#dbeafe',
+    'primaryTextColor':  '#1e293b',
+    'primaryBorderColor':'#3b82f6',
+    'secondaryColor':    '#f0fdf4',
+    'tertiaryColor':     '#fef3c7',
+    'lineColor':         '#64748b',
+    'fontSize':          '14px',
+    'fontFamily':        'Segoe UI, system-ui, sans-serif',
+    'nodeTextColor':     '#1e293b'
+  }
+}}%%
+
+flowchart TD
+  %% ── Requirement Sources ──
+  JAMA["<b>Jama / Word Export</b><br/>YAML requirement files<br/><i>REQ-SYS-AEB-xxx.yaml</i>"]
+  GHERKIN["<b>Gherkin Scenarios</b><br/>Feature-engineer authored<br/><i>.feature files in GitHub</i>"]
+  XLSX["<b>Spreadsheet Import</b><br/>Requirements matrix<br/><i>.xlsx rows</i>"]
+
+  %% ── Devin Session ──
+  DEVIN["<b>Devin Session Triggered</b><br/>Prompt or playbook macro"]
+
+  %% ── Analysis ──
+  ANALYZE["<b>Requirement Analysis</b><br/>Assess atomicity, testability,<br/>and ambiguity"]
+
+  %% ── Decision ──
+  ATOMIC{"<b>Atomic &amp; Testable?</b>"}
+
+  %% ── Decomposition ──
+  DECOMPOSE["<b>Decompose</b><br/>Split into atomic Gherkin<br/>scenarios with traceability"]
+
+  %% ── Mapping ──
+  MAP["<b>Abstraction Mapping</b><br/>Map abstract steps through<br/>action library + bench boundary"]
+
+  %% ── Generation ──
+  GEN["<b>Test Artifact Generation</b><br/>Produce executable test scripts<br/><i>ECU-TEST style, no hard-coded CAN IDs</i>"]
+
+  %% ── Execution ──
+  EXEC["<b>Test Execution</b><br/>Run against HIL bench<br/><i>replay harness in demo</i>"]
+
+  %% ── Impact ──
+  IMPACT["<b>Impact Analysis</b><br/>Check existing tests affected<br/>by requirement changes"]
+
+  %% ── Traceability ──
+  TRACE["<b>Traceability Report</b><br/>Requirement &rarr; Scenario &rarr;<br/>Test &rarr; Result matrix"]
+
+  %% ── PR ──
+  PR["<b>PR with All Artifacts</b><br/>Scenarios, test scripts, results,<br/>traceability report"]
+
+  %% ── Review ──
+  REVIEW["<b>Engineer Reviews</b><br/>Test engineer approves<br/>or requests changes"]
+
+  %% ── Decision ──
+  APPROVED{"<b>Approved?</b>"}
+  READY["<b>Ready for Bench Execution</b><br/>ISO 26262 traceability maintained"]
+  ITERATE["<b>Iterate</b><br/>Refine scenarios or tests"]
+
+  %% ── Connections ──
+  JAMA --> DEVIN
+  GHERKIN --> DEVIN
+  XLSX --> DEVIN
+  DEVIN --> ANALYZE
+  ANALYZE --> ATOMIC
+  ATOMIC -- "Yes" --> MAP
+  ATOMIC -- "No" --> DECOMPOSE
+  DECOMPOSE --> MAP
+  MAP --> GEN
+  GEN --> EXEC
+  EXEC --> IMPACT
+  IMPACT --> TRACE
+  TRACE --> PR
+  PR --> REVIEW
+  REVIEW --> APPROVED
+  APPROVED -- "Yes" --> READY
+  APPROVED -- "No" --> ITERATE
+  ITERATE -. "refine" .-> ANALYZE
+
+  %% ── Styles ──
+  classDef source     fill:#d1fae5,stroke:#059669,stroke-width:2px,color:#064e3b
+  classDef devinNode  fill:#e0e7ff,stroke:#6366f1,stroke-width:2px,color:#312e81
+  classDef pipeline   fill:#dbeafe,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a
+  classDef decision   fill:#fef9c3,stroke:#eab308,stroke-width:2px,color:#713f12
+  classDef result     fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#78350f
+  classDef reviewNode fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,color:#581c87
+  classDef passNode   fill:#d1fae5,stroke:#10b981,stroke-width:2px,color:#064e3b
+  classDef failNode   fill:#fee2e2,stroke:#ef4444,stroke-width:2px,color:#7f1d1d
+
+  class JAMA,GHERKIN,XLSX source
+  class DEVIN devinNode
+  class ANALYZE,MAP,GEN,EXEC,IMPACT pipeline
+  class ATOMIC,APPROVED decision
+  class DECOMPOSE,TRACE,PR result
+  class REVIEW reviewNode
+  class READY passNode
+  class ITERATE failNode
+      </pre>
+    </div>
+  </main>
+
+  <section class="legend">
+    <div class="legend-inner">
+      <span class="legend-title">Legend</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#d1fae5;border:2px solid #059669;"></span> Requirement Source</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#e0e7ff;border:2px solid #6366f1;"></span> Devin Session</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#dbeafe;border:2px solid #3b82f6;"></span> Pipeline Step</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#fef9c3;border:2px solid #eab308;"></span> Decision</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#fef3c7;border:2px solid #f59e0b;"></span> Generated Artifact</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#f3e8ff;border:2px solid #a855f7;"></span> Engineer Review</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#d1fae5;border:2px solid #10b981;"></span> Approved</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#fee2e2;border:2px solid #ef4444;"></span> Iterate</span>
+    </div>
+  </section>
+
+  <footer>
+    L3 HIL Verification Demo &mdash; Requirements-Driven V&amp;V &copy; 2026 &middot; ASAM XIL &middot; ISO 26262
+  </footer>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: 'loose',
+      flowchart: {
+        htmlLabels: true,
+        curve: 'basis',
+        rankSpacing: 60,
+        nodeSpacing: 40,
+        padding: 16,
+        useMaxWidth: false
+      }
+    });
+  </script>
+</body>
+</html>
