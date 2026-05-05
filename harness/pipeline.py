@@ -66,7 +66,17 @@ def run(requirement_path: str, bench_id: str = "bench_beta") -> None:
         {"name": "Traceability Report", "status": "pending", "detail": ""},
     ]
 
-    _update_state({"pipeline_stage": "running", "stages": stages})
+    _update_state({
+        "pipeline_stage": "running",
+        "stages": stages,
+        "requirements_analyzed": 0,
+        "scenarios_generated": 0,
+        "tests_generated": 0,
+        "tests_executed": 0,
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "traceability_records": [],
+    })
 
     # ── Stage 1: Requirement Ingestion ────────────────────────────────
     _set_stage(stages, "Requirement Ingestion", "running")
