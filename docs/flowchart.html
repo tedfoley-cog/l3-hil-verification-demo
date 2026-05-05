@@ -52,6 +52,11 @@
 
     .mermaid svg { margin: 0 auto; display: block; }
 
+    /* Ensure sans-serif font for SVG text */
+    .mermaid text {
+      font-family: sans-serif !important;
+    }
+
     .legend {
       width: 100%;
       max-width: 1400px;
@@ -126,55 +131,55 @@
     'secondaryColor':    '#f0fdf4',
     'tertiaryColor':     '#fef3c7',
     'lineColor':         '#64748b',
-    'fontSize':          '14px',
-    'fontFamily':        'Segoe UI, system-ui, sans-serif',
+    'fontSize':          '13px',
+    'fontFamily':        'sans-serif',
     'nodeTextColor':     '#1e293b'
   }
 }}%%
 
 flowchart TD
   %% ── Requirement Sources ──
-  JAMA["<b>Jama / Word Export</b><br/>YAML requirement files<br/><i>REQ-SYS-AEB-xxx.yaml</i>"]
-  GHERKIN["<b>Gherkin Scenarios</b><br/>Feature-engineer authored<br/><i>.feature files in GitHub</i>"]
-  XLSX["<b>Spreadsheet Import</b><br/>Requirements matrix<br/><i>.xlsx rows</i>"]
+  JAMA["Jama / Word Export\nYAML requirement files\nREQ-SYS-AEB-xxx.yaml"]
+  GHERKIN["Gherkin Scenarios\nFeature-engineer authored\n.feature files in GitHub"]
+  XLSX["Spreadsheet Import\nRequirements matrix\n.xlsx rows"]
 
   %% ── Devin Session ──
-  DEVIN["<b>Devin Session Triggered</b><br/>Prompt or playbook macro"]
+  DEVIN["Devin Session Triggered\nPrompt or playbook macro"]
 
   %% ── Analysis ──
-  ANALYZE["<b>Requirement Analysis</b><br/>Assess atomicity, testability,<br/>and ambiguity"]
+  ANALYZE["Requirement Analysis\nAtomicity, testability,\nambiguity assessment"]
 
   %% ── Decision ──
-  ATOMIC{"<b>Atomic &amp; Testable?</b>"}
+  ATOMIC{"Atomic & Testable?"}
 
   %% ── Decomposition ──
-  DECOMPOSE["<b>Decompose</b><br/>Split into atomic Gherkin<br/>scenarios with traceability"]
+  DECOMPOSE["Decompose\nSplit into atomic Gherkin\nscenarios with traceability"]
 
   %% ── Mapping ──
-  MAP["<b>Abstraction Mapping</b><br/>Map abstract steps through<br/>action library + bench boundary"]
+  MAP["Abstraction Mapping\nAction library + bench\nboundary resolution"]
 
   %% ── Generation ──
-  GEN["<b>Test Artifact Generation</b><br/>Produce executable test scripts<br/><i>ECU-TEST style, no hard-coded CAN IDs</i>"]
+  GEN["Test Artifact Generation\nECU-TEST executable scripts\nNo hard-coded CAN IDs"]
 
   %% ── Execution ──
-  EXEC["<b>Test Execution</b><br/>Run against HIL bench<br/><i>replay harness in demo</i>"]
+  EXEC["Test Execution\nRun against HIL bench\nReplay harness in demo"]
 
   %% ── Impact ──
-  IMPACT["<b>Impact Analysis</b><br/>Check existing tests affected<br/>by requirement changes"]
+  IMPACT["Impact Analysis\nIdentify existing tests\naffected by changes"]
 
   %% ── Traceability ──
-  TRACE["<b>Traceability Report</b><br/>Requirement &rarr; Scenario &rarr;<br/>Test &rarr; Result matrix"]
+  TRACE["Traceability Report\nReq > Scenario >\nTest > Result matrix"]
 
   %% ── PR ──
-  PR["<b>PR with All Artifacts</b><br/>Scenarios, test scripts, results,<br/>traceability report"]
+  PR["PR with All Artifacts\nScenarios, scripts, results,\ntraceability report"]
 
   %% ── Review ──
-  REVIEW["<b>Engineer Reviews</b><br/>Test engineer approves<br/>or requests changes"]
+  REVIEW["Engineer Reviews\nTest engineer approves\nor requests changes"]
 
   %% ── Decision ──
-  APPROVED{"<b>Approved?</b>"}
-  READY["<b>Ready for Bench Execution</b><br/>ISO 26262 traceability maintained"]
-  ITERATE["<b>Iterate</b><br/>Refine scenarios or tests"]
+  APPROVED{"Approved?"}
+  READY["Bench Ready\nISO 26262 traceable"]
+  ITERATE["Iterate\nRefine scenarios or tests"]
 
   %% ── Connections ──
   JAMA --> DEVIN
@@ -237,16 +242,16 @@ flowchart TD
   </footer>
 
   <script type="module">
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
     mermaid.initialize({
       startOnLoad: true,
       securityLevel: 'loose',
       flowchart: {
-        htmlLabels: true,
+        htmlLabels: false,
         curve: 'basis',
-        rankSpacing: 60,
+        rankSpacing: 55,
         nodeSpacing: 40,
-        padding: 16,
+        padding: 25,
         useMaxWidth: false
       }
     });
