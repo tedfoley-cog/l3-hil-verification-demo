@@ -116,8 +116,8 @@ def _scenario_to_test_id(scenario: GherkinScenario) -> str:
 
 def _result_icon(result: TestResult) -> str:
     return {
-        TestResult.PASS: "PASS",
-        TestResult.FAIL: "FAIL",
-        TestResult.NOT_RUN: "SKIP",
-        TestResult.ERROR: "ERR",
+        TestResult.PASS: "ok",
+        TestResult.FAIL: "XX",
+        TestResult.NOT_RUN: "--",
+        TestResult.ERROR: "!!",
     }.get(result, "?")
