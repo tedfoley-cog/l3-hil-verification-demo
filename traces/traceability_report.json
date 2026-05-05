@@ -1,0 +1,50 @@
+[
+  {
+    "requirement_id": "REQ-SYS-AEB-002",
+    "requirement_title": "AEB deceleration profile and warning coordination",
+    "scenario_name": "AEB deceleration profile and warning coordination \u2014 deceleration",
+    "test_id": "req_sys_aeb_002_1",
+    "result": "PASS",
+    "bench_id": "bench_beta",
+    "decomposed": true,
+    "impact_on_existing": [
+      "aeb_basic_stop"
+    ]
+  },
+  {
+    "requirement_id": "REQ-SYS-AEB-002",
+    "requirement_title": "AEB deceleration profile and warning coordination",
+    "scenario_name": "AEB deceleration profile and warning coordination \u2014 warning",
+    "test_id": "req_sys_aeb_002_2",
+    "result": "PASS",
+    "bench_id": "bench_beta",
+    "decomposed": true,
+    "impact_on_existing": [
+      "aeb_basic_stop"
+    ]
+  },
+  {
+    "requirement_id": "REQ-SYS-AEB-002",
+    "requirement_title": "AEB deceleration profile and warning coordination",
+    "scenario_name": "AEB deceleration profile and warning coordination \u2014 warning",
+    "test_id": "req_sys_aeb_002_3",
+    "result": "PASS",
+    "bench_id": "bench_beta",
+    "decomposed": true,
+    "impact_on_existing": [
+      "aeb_basic_stop"
+    ]
+  },
+  {
+    "requirement_id": "REQ-SYS-AEB-002",
+    "requirement_title": "AEB deceleration profile and warning coordination",
+    "scenario_name": "AEB deceleration profile and warning coordination \u2014 deceleration",
+    "test_id": "req_sys_aeb_002_4",
+    "result": "PASS",
+    "bench_id": "bench_beta",
+    "decomposed": true,
+    "impact_on_existing": [
+      "aeb_basic_stop"
+    ]
+  }
+]
