@@ -278,8 +278,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Bench configuration ID (default: bench_beta)",
     )
     args = parser.parse_args(argv)
-    run(args.path, bench_id=args.bench)
-    return 0
+    return run(args.path, bench_id=args.bench)
 
 
 if __name__ == "__main__":
