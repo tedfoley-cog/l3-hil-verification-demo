@@ -54,10 +54,9 @@ def format_traceability_markdown(records: list[TraceabilityRecord]) -> str:
 
     for r in records:
         impact = ", ".join(r.impact_on_existing) if r.impact_on_existing else "—"
-        result_icon = _result_icon(r.result)
         lines.append(
             f"| {r.requirement_id} | {r.scenario_name[:40]} | {r.test_id} "
-            f"| {result_icon} {r.result.value} | {r.bench_id} "
+            f"| {r.result.value} | {r.bench_id} "
             f"| {'Yes' if r.decomposed else 'No'} | {impact} |"
         )
 
@@ -112,12 +111,3 @@ def _scenario_to_test_id(scenario: GherkinScenario) -> str:
     req_id = scenario.parent_requirement_id.lower().replace("-", "_")
     suffix = f"_{scenario.decomposition_index}" if scenario.decomposition_index > 0 else ""
     return f"{req_id}{suffix}"
-
-
-def _result_icon(result: TestResult) -> str:
-    return {
-        TestResult.PASS: "PASS",
-        TestResult.FAIL: "FAIL",
-        TestResult.NOT_RUN: "SKIP",
-        TestResult.ERROR: "ERR",
-    }.get(result, "?")
